@@ -4,19 +4,15 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Samad Jawaid', 'jawaidss@rose-hulman.edu'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'quickstart.db'
     }
 }
 
@@ -24,13 +20,15 @@ DATABASES = {
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/Kentucky/Louisville'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
+SITE_NAME = 'Samad Jawaid'
+SITE_DOMAIN = '%s.com' % SITE_NAME.replace(' ', '').lower()
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -64,9 +62,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    'static',
 )
 
 # List of finder classes that know how to find static files in
@@ -78,7 +74,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '&amp;rht1-bu1qm73pmlbn$lmagr*@pd8@l$ug0qn78sfdyy)2^^x^'
+SECRET_KEY = '&rht1-bu1qm73pmlbn$lmagr*@pd8@l$ug0qn78sfdyy)2^^x^'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -103,9 +99,7 @@ ROOT_URLCONF = 'quickstart.urls'
 WSGI_APPLICATION = 'quickstart.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    'templates',
 )
 
 INSTALLED_APPS = (
@@ -149,3 +143,9 @@ LOGGING = {
         },
     }
 }
+
+# Import local_settings, if it exists.
+try:
+    from local_settings import *
+except ImportError:
+    pass
