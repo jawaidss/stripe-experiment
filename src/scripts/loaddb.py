@@ -14,7 +14,7 @@ def run():
         site.domain = 'www.' + settings.SITE_DOMAIN
     site.save()
 
-    user = User.objects.create_superuser('jawaidss', 'jawaidss@rose-hulman.edu', 'temp123')
-    user.first_name = 'Samad'
-    user.last_name = 'Jawaid'
-    user.save()
+    for name, email in settings.ADMINS:
+        user = User.objects.create_superuser(email.split('@')[0], email, 'temp123')
+        user.first_name, user.last_name = name.split()
+        user.save()
