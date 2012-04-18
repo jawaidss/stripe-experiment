@@ -1,7 +1,7 @@
-{% extends "main/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}{% block h1 %}Page not found{% endblock %}{% endblock %}
 
 {% block content %}
-<p>Sorry, but the requested page could not be found.</p>
+<p>{% block description %}Sorry, but the requested page could not be found.{% endblock %}</p>
 {% endblock %}
