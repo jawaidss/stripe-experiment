@@ -2,10 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Bootstrap, from Twitter</title>
+        <title>{{ SITE_NAME }} | {% block title %}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <meta name="description" content="{% block description %}{% endblock %}">
+        {# <meta name="author" content=""> #}
         <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
         <style>
             body {
@@ -16,10 +16,12 @@
         <!--[if lt IE 9]>
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+        {% comment %}
         <link rel="shortcut icon" href="{{ STATIC_URL }}ico/favicon.ico">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ STATIC_URL }}ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ STATIC_URL }}ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}ico/apple-touch-icon-57-precomposed.png">
+        {% endcomment %}
     </head>
     <body>
         <div class="navbar navbar-fixed-top">
@@ -30,20 +32,19 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="#">Project name</a>
+                    <a class="brand" href="http://www.{{ SITE_DOMAIN }}">{{ SITE_NAME }}</a>
                     <div class="nav-collapse">
                         <ul class="nav">
-                            <li class="active"><a href="#">Home</a></li>
-                            <li><a href="#about">About</a></li>
-                            <li><a href="#contact">Contact</a></li>
+                            <li{% if IS_ACTIVE.index %} class="active"{% endif %}><a href="{% url main-index %}">Home</a></li>
+                            <li><a href="{% url admin:index %}">Administration</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
         <div class="container">
-            <h1>Bootstrap starter template</h1>
-            <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+            <h1>{% block h1 %}{% endblock %}</h1>
+            {% block content %}{% endblock %}
         </div>
         <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
         <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
