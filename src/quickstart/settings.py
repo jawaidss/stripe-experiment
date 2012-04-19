@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'main',
     'registration',
+    'crispy_forms',
 )
 
 # A sample logging configuration. The only tangible logging
