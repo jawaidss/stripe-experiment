@@ -38,7 +38,7 @@
                         <ul class="nav">
                             <li{% if IS_ACTIVE.index %} class="active"{% endif %}><a href="{% url main-index %}">Home</a></li>
                             <li><a href="{% url admin:index %}">Administration</a></li>
-                            {% if user.anonymous %}
+                            {% if user.is_anonymous %}
                                 <li{% if IS_ACTIVE.log_in %} class="active"{% endif %}><a href="{% url auth_login %}">Log in</a></li>
                                 <li{% if IS_ACTIVE.sign_up %} class="active"{% endif %}><a href="{% url registration_register %}">Sign up</a></li>
                             {% else %}
