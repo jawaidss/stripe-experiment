@@ -71,6 +71,21 @@
         <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
         <script>
             $(function() {
+                if ($("form").length > 0) {
+                    var required = $("form .requiredField").filter(function() {
+                        return $(this).siblings().children(":input").val() == "";
+                    });
+                    var error = $("form .error :input");
+                    if (required.length > 0) {
+                        required.first().siblings().children(":input").select();
+                    } else if (error.length > 0) {
+                        error.first().select();
+                    } else {
+                        $("form :input:visible:enabled").filter(function() {
+                            return $(this).val() == "";
+                        }).first().select();
+                    }
+                }
                 {% block jquery %}{% endblock %}
             });
         </script>
