@@ -151,6 +151,8 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'context_processors.main',
 )
 
+GOOGLE_ANALYTICS_ID = 'UA-XXXXX-Y'
+
 # Import local_settings, if it exists.
 try:
     from local_settings import *
