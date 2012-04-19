@@ -111,10 +111,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.sitemaps',
+    'django.contrib.humanize',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'django_extensions',
     'main',
+    'registration',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -153,6 +155,12 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 )
 
 GOOGLE_ANALYTICS_ID = 'UA-XXXXX-Y'
+
+DEFAULT_FROM_EMAIL = '%s <do-not-reply@%s>' % (SITE_NAME, SITE_DOMAIN)
+
+LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_ACTIVATION_DAYS = 7
 
 # Import local_settings, if it exists.
 try:

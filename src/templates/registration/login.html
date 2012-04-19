@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{% block description %}{% block h1 %}Log in{% endblock %}{% endblock %}{% endblock %}
+
+{% block content %}
+{% if user.is_anonymous %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><input type="submit" value="Log in"></p>
+    </form>
+    <p>If you don't have an account, you can <a href="{% url registration_register %}">sign up</a> for one; it's free, and you'll get access to a bunch of nifty features.</p>
+    <p><a href="{% url auth_password_reset %}">Forgotten your password?</a></p>
+{% else %}
+    <p>You are already logged in.</p>
+{% endif %}
+{% endblock %}

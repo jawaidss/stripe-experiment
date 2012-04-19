@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{% block h1 %}Sign up{% endblock %}{% endblock %}
+
+{% block content %}
+{% if user.is_anonymous %}
+    <p>{% block description %}Fill out the form below (all fields are required), and your account will be created; you'll be sent an email with instructions on how to finish your registration.{% endblock %}</p>
+    <form action="." method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><input type="submit" value="Register"></p>
+    </form>
+{% else %}
+    <p>You are already logged in.</p>
+{% endif %}
+{% endblock %}
