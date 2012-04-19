@@ -118,6 +118,7 @@ INSTALLED_APPS = (
     'main',
     'registration',
     'crispy_forms',
+    'ajax_validation',
 )
 
 # A sample logging configuration. The only tangible logging
