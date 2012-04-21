@@ -74,6 +74,7 @@
         <script src="{{ STATIC_URL }}js/jquery-ajax-validation-bootstrap.js"></script>
         <script>
             $(function() {
+                $(":input:visible:enabled").first().focus();
                 {% block jquery %}{% endblock %}
             });
         </script>
