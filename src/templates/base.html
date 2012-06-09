@@ -36,16 +36,16 @@
                     <a class="brand" href="http://www.{{ SITE_DOMAIN }}">{{ SITE_NAME }}</a>
                     <div class="nav-collapse">
                         <ul class="nav">
-                            <li{% if IS_ACTIVE.index %} class="active"{% endif %}><a href="{% url main-index %}">Home</a></li>
+                            <li{% if IS_ACTIVE.index %} class="active"{% endif %}><a href="{% url "main-index" %}">Home</a></li>
                             {% if user.is_anonymous %}
-                                <li{% if IS_ACTIVE.log_in %} class="active"{% endif %}><a href="{% url auth_login %}">Log in</a></li>
-                                <li{% if IS_ACTIVE.sign_up %} class="active"{% endif %}><a href="{% url registration_register %}">Sign up</a></li>
+                                <li{% if IS_ACTIVE.log_in %} class="active"{% endif %}><a href="{% url "auth_login" %}">Log in</a></li>
+                                <li{% if IS_ACTIVE.sign_up %} class="active"{% endif %}><a href="{% url "registration_register" %}">Sign up</a></li>
                             {% else %}
                                 {% if user.is_staff %}
-                                    <li><a href="{% url admin:index %}">Administration</a></li>
+                                    <li><a href="{% url "admin:index" %}">Administration</a></li>
                                 {% endif %}
-                                <li{% if IS_ACTIVE.change_password %} class="active"{% endif %}><a href="{% url auth_password_change %}">Change password</a></li>
-                                <li><a href="{% url auth_logout %}">Log out</a></li>
+                                <li{% if IS_ACTIVE.change_password %} class="active"{% endif %}><a href="{% url "auth_password_change" %}">Change password</a></li>
+                                <li><a href="{% url "auth_logout" %}">Log out</a></li>
                             {% endif %}
                         </ul>
                         {% if user.is_authenticated %}

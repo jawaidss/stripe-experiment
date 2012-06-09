@@ -4,7 +4,7 @@
 {% block title %}{{ title }} | {{ SITE_NAME }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url main-index %}">{{ SITE_NAME }}</a> administration</h1>
+<h1 id="site-name"><a href="{% url "main-index" %}">{{ SITE_NAME }}</a> administration</h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

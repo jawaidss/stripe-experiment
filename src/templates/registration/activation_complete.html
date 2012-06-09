@@ -3,5 +3,5 @@
 {% block title %}{% block h1 %}Account activation{% endblock %}{% endblock %}
 
 {% block content %}
-<p>{% block description %}Thanks for signing up!{% endblock %} Now you can <a href="{% url auth_login %}">log in</a> and start contributing!</p>
+<p>{% block description %}Thanks for signing up!{% endblock %} Now you can <a href="{% url "auth_login" %}">log in</a> and start contributing!</p>
 {% endblock %}

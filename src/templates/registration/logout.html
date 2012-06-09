@@ -5,5 +5,5 @@
 {% block h1 %}{% block description %}You've been {{ title|lower }}.{% endblock %}{% endblock %}
 
 {% block content %}
-<p>Thanks for stopping by; when you come back, don't forget to <a href="{% url auth_login %}">log in</a> again.</p>
+<p>Thanks for stopping by; when you come back, don't forget to <a href="{% url "auth_login" %}">log in</a> again.</p>
 {% endblock %}

@@ -14,7 +14,7 @@
             <button class="btn btn-primary" type="submit">Register</button>
         </div>
     </form>
-    <p>If you already have an account, you can <a href="{% url auth_login %}">log in</a>.</p>
+    <p>If you already have an account, you can <a href="{% url "auth_login" %}">log in</a>.</p>
 {% else %}
     <p>You are already logged in.</p>
 {% endif %}
@@ -22,6 +22,6 @@
 
 {% block jquery %}
 {% if user.is_anonymous %}
-    $("#registration_form").validate("{% url ajax_validation-validate_registration_form %}", {callback: bootstrap_callback});
+    $("#registration_form").validate("{% url "ajax_validation-validate_registration_form" %}", {callback: bootstrap_callback});
 {% endif %}
 {% endblock %}
