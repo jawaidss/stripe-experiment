@@ -27,8 +27,8 @@ TIME_ZONE = 'America/Kentucky/Louisville'
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
-SITE_NAME = 'Samad Jawaid'
-SITE_DOMAIN = '%s.com' % SITE_NAME.replace(' ', '').lower()
+SITE_NAME = 'Stripe Experiment'
+SITE_DOMAIN = '%s.com' % SITE_NAME.split()[0].lower()
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
