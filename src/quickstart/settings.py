@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'django_extensions',
     'main',
+    'shopping',
     'registration',
     'crispy_forms',
     'ajax_validation',

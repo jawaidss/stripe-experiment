@@ -12,6 +12,7 @@ def callback(request, *args, **kwargs):
 
 urlpatterns = patterns('',
     url(r'^', include('main.urls')),
+    url(r'^shopping/', include('shopping.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

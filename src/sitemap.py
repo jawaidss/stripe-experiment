@@ -14,6 +14,7 @@ class SimpleSitemap(Sitemap):
             'registration_complete',
             'registration_register',
             'main-index',
+            'shopping-index',
         )
 
     def location(self, name):

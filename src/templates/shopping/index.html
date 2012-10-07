@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}{% block h1 %}Shopping{% endblock %}{% endblock %}
+
+{% block description %}This is the description.{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span8">
+        <h2>Items</h2>
+        {% for item in items %}
+            <hr>
+            <h3>{{ item.name }} <small>${{ item.price }}</smal></h3>
+            <div class="row">
+                <div class="span6">
+                    <p>{{ item.description }}</p>
+                </div>
+                <div class="span2">
+                    <p><a href="{% url "shopping-ajax_add_to_cart" item.id %}" id="item{{ item.id }}" class="add-to-cart btn btn-large btn-primary{% if item in cart.items %} disabled{% endif %}"><i class="icon-shopping-cart icon-white"></i> Add to cart</a></p>
+                </div>
+            </div>
+        {% empty %}
+            <p>There are no items, yet.</p>
+        {% endfor %}
+    </div>
+    <div class="span4">
+        <h2>Cart</h2>
+        <table id="cart" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items %}
+                    <tr>
+                        <td><a href="{% url "shopping-ajax_remove_from_cart" item.id %}" class="remove-from-cart"><i class="icon-remove"></i></a></td>
+                        <td>{{ item.name }}</td>
+                        <td>${{ item.price }}</td>
+                    </tr>
+                {% endfor %}
+                <tr id="total-row">
+                    <td colspan="2"><strong>Total</strong></td>
+                    <td><strong id="total">${{ cart.total }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="empty-cart-message" class="alert">Your cart is empty.</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block jquery %}
+function newAlert(type, message) {
+    var alert = $("<div></div>");
+    alert.addClass("alert");
+    alert.addClass("alert-" + type);
+    alert.html(message);
+    var close = $("<a></a>");
+    close.addClass("close");
+    close.attr("data-dismiss", "alert");
+    close.html("&times;");
+    alert.prepend(close);
+    alert.insertBefore($("div.page-header"));
+    return alert;
+}
+
+{% if cart.items %}
+    $("#empty-cart-message").hide();
+{% else %}
+    $("#cart").hide();
+{% endif %}
+
+$("a.add-to-cart").click(function() {
+    var $this = $(this);
+
+    if (!$this.hasClass("disabled")) {
+        $.post(
+            $(this).attr("href"),
+            function(response) {
+                if (response.error) {
+                    newAlert("error", response.error);
+                } else {
+                    $this.addClass("disabled");
+                    var tr = $("<tr></tr>");
+
+                    var td1 = $("<td></td>");
+                    var a = $("<a></a>");
+                    a.attr("href", response.item.ajax_remove_from_cart_url);
+                    a.addClass("remove-from-cart");
+                    var i = $("<i></i>");
+                    i.addClass("icon-remove");
+                    a.append(i);
+                    td1.append(a);
+                    tr.append(td1);
+
+                    var td2 = $("<td></td>");
+                    td2.html(response.item.name);
+                    tr.append(td2);
+
+                    var td3 = $("<td></td>");
+                    td3.html("$" + response.item.price);
+                    tr.append(td3);
+
+                    tr.prependTo($("#cart").find("tbody"));
+
+                    $("#total").html("$" + response.total);
+
+                    if ($("#empty-cart-message").is(":visible")) {
+                        $("#empty-cart-message").hide();
+                        $("#cart").show();
+                    }
+
+                    newAlert("success", response.success);
+                }
+            },
+            "json"
+        );
+    }
+
+    return false;
+});
+
+$(document).on("click", "a.remove-from-cart", function() {
+    var $this = $(this);
+
+    $.post(
+        $(this).attr("href"),
+        function(response) {
+            if (response.error) {
+                newAlert("error", response.error);
+            } else {
+                $this.parents("tr").remove();
+
+                if ($("#cart").find("tbody tr:not(#total-row)").size() > 0) {
+                    $("#total").html("$" + response.total);
+                } else {
+                    $("#cart").hide();
+                    $("#empty-cart-message").show();
+                }
+
+                $("#item" + response.id).removeClass("disabled");
+
+                newAlert("success", response.success);
+            }
+        },
+        "json"
+    );
+
+    return false;
+});
+{% endblock %}
