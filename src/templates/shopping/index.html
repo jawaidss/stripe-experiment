@@ -20,7 +20,7 @@
                 </div>
             </div>
         {% empty %}
-            <p>There are no items, yet.</p>
+            <div class="alert">There are no items, yet.</div>
         {% endfor %}
     </div>
     <div class="span4">
@@ -36,7 +36,7 @@
             <tbody>
                 {% for item in cart.items %}
                     <tr>
-                        <td><a href="{% url "shopping-ajax_remove_from_cart" item.id %}" class="remove-from-cart"><i class="icon-remove"></i></a></td>
+                        <td><a href="{% url "shopping-ajax_remove_from_cart" item.id %}" class="remove-from-cart" rel="tooltip" title="Remove"><i class="icon-remove"></i></a></td>
                         <td>{{ item.name }}</td>
                         <td>${{ item.price }}</td>
                     </tr>
@@ -53,6 +53,8 @@
 {% endblock %}
 
 {% block jquery %}
+$("a[rel=tooltip]").tooltip();
+
 function newAlert(type, message) {
     var alert = $("<div></div>");
     alert.addClass("alert");
@@ -90,6 +92,9 @@ $("a.add-to-cart").click(function() {
                     var a = $("<a></a>");
                     a.attr("href", response.item.ajax_remove_from_cart_url);
                     a.addClass("remove-from-cart");
+                    a.attr("rel", "tooltip");
+                    a.attr("title", "Remove");
+                    a.tooltip();
                     var i = $("<i></i>");
                     i.addClass("icon-remove");
                     a.append(i);
@@ -132,6 +137,7 @@ $(document).on("click", "a.remove-from-cart", function() {
             if (response.error) {
                 newAlert("error", response.error);
             } else {
+                $this.tooltip("hide");
                 $this.parents("tr").remove();
 
                 if ($("#cart").find("tbody tr:not(#total-row)").size() > 0) {
