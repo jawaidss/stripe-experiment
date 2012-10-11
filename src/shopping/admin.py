@@ -1,9 +1,14 @@
 from django.contrib import admin
 
-from models import Item
+from models import Order
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'price',)
-    search_fields = ('name', 'description',)
+    list_display = ('order', 'name', 'description', 'price',)
+    list_display_links = ('name',)
+    search_fields = ('order__user__last_name', 'order__user__first_name', 'order__user__username', 'name', 'description',)
 
-admin.site.register(Item, ItemAdmin)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('user', 'datetime', 'count', 'total',)
+    search_fields = ('user__last_name', 'user__first_name', 'user__username',)
+
+admin.site.register(Order, OrderAdmin)

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 def main(request):
     is_active = {
         'index': request.path == reverse('main-index'),
-        'shopping': request.path.startswith(reverse('shopping-index')),
+        'cart': request.path == reverse('shopping-cart'),
         'change_password': request.path.startswith(reverse('auth_password_change')),
         'log_in': request.path == reverse('auth_login'),
         'sign_up': request.path.startswith(reverse('registration_register')),
