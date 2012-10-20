@@ -28,14 +28,37 @@
             </tr>
         </tbody>
     </table>
+    <div class="btn-group">
+        <a href="{% url "main-index" %}" class="btn btn-large">Continue shopping</a>
+        <a href="{% url "shopping-checkout" %}" class="btn btn-large">Check out</a>
+        <a href="" class="btn btn-large empty-cart"><i class="icon-trash"></i> Empty cart</a>
+    </div>
+    <br>
+    <div class="alert empty-cart">
+        <p>Are you sure that you want to empty your cart?</p>
+        <div class="btn-group">
+            <a href="{% url "shopping-empty_cart" %}" class="btn btn-primary">Yes</a>
+            <a href="#" class="btn empty-cart">No</a>
+        </div>
+    </div>
 {% else %}
-    <div class="alert">Your cart is empty.</div>
+    <div class="alert alert-info">Your cart is empty.</div>
+    <p><a href="{% url "main-index" %}" class="btn btn-large">Start shopping</a></p>
 {% endif %}
 {% endblock %}
 
 {% block jquery %}
 $("a[rel=tooltip]").tooltip();
 $("a[rel=popover]").popover().click(function() {
+    return false;
+});
+$("div.empty-cart").hide();
+$("a.empty-cart").click(function() {
+    if (!$(this).hasClass("disabled")) {
+        $("div.empty-cart").toggle();
+        $("a.empty-cart.disabled").removeClass("disabled");
+        $(this).addClass("disabled");
+    }
     return false;
 });
 {% endblock %}

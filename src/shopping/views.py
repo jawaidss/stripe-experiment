@@ -15,6 +15,18 @@ def cart(request):
                               RequestContext(request))
 
 @login_required
+def empty_cart(request):
+    cart = get_or_create_cart(request)
+
+    if cart.is_empty:
+        messages.error(request, 'You cannot empty an already empty cart.')
+    else:
+        cart.empty(request)
+        messages.success(request, 'Your cart was successfully emptied.')
+
+    return HttpResponseRedirect(reverse('shopping-cart'))
+
+@login_required
 def remove_item_from_cart(request, id):
     cart = get_or_create_cart(request)
     item = cart.remove(request, int(id))
@@ -25,3 +37,16 @@ def remove_item_from_cart(request, id):
         messages.success(request, '%s was successfully removed from your cart.' % item.name)
 
     return HttpResponseRedirect(reverse('shopping-cart'))
+
+@login_required
+def checkout(request):
+    cart = get_or_create_cart(request)
+
+    if cart.is_empty:
+        messages.error(request, 'You cannot checkout an empty cart.')
+        return HttpResponseRedirect(reverse('shopping-cart'))
+
+    # to-do
+    cart.empty(request)
+    messages.success(request, 'You successfully checked out.')
+    return HttpResponseRedirect(reverse('main-index'))
