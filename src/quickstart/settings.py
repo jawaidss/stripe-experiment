@@ -155,6 +155,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'context_processors.main',
+    'context_processors.shopping',
 )
 
 GOOGLE_ANALYTICS_ID = 'UA-XXXXX-Y'
@@ -166,6 +167,9 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ACTIVATION_DAYS = 7
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+STRIPE_SECRET_KEY = ''
+STRIPE_PUBLISHABLE_KEY = ''
 
 # Import local_settings, if it exists.
 try:

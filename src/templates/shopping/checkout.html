@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}{% block h1 %}Check out{% endblock %}{% endblock %}
+
+{% block description %}This is the description.{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span6">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items %}
+                    <tr>
+                        <td><a href="#" rel="popover" title="Description" data-content="{{ item.description }}">{{ item.name }}</a></td>
+                        <td>${{ item.price }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>${{ cart.total }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="span6">
+        <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% if form %}
+                {{ form|crispy }}
+            {% else %}
+                <div class="clearfix control-group">
+                    <label class="control-label">Cardholder name</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.name }}</span></div>
+                </div>
+                <div class="clearfix control-group">
+                    <label class="control-label">Billing address line 1</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.address_line1 }}</span></div>
+                </div>
+                <div class="clearfix control-group">
+                    <label class="control-label">Billing address line 2</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.address_line2 }}</span></div>
+                </div>
+                <div class="clearfix control-group">
+                    <label class="control-label">Billing address state</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.address_state }}</span></div>
+                </div>
+                <div class="clearfix control-group">
+                    <label class="control-label">Billing zip</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.address_zip }}</span></div>
+                </div>
+                <div class="clearfix control-group">
+                    <label class="control-label">Billing address country</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.address_country }}</span></div>
+                </div>
+                <div class="clearfix control-group">
+                    <label class="control-label">Card</label>
+                    <div class="controls"><span class="uneditable-input">{{ card.type }} ending in {{ card.last4 }}</span></div>
+                </div>
+            {% endif %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Check out</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% if form %}
+    <script src="https://js.stripe.com/v1/"></script>
+{% endif %}
+{% endblock %}
+
+{% block jquery %}
+$("a[rel=popover]").popover().click(function() {
+    return false;
+});
+{% if form %}
+    Stripe.setPublishableKey("{{ STRIPE_PUBLISHABLE_KEY }}");
+    $("form").submit(function() {
+        $("button").attr("disabled", "disabled");
+        Stripe.createToken({
+            name: $("#id_name").val(),
+            address_line1: $("#id_address_line1").val(),
+            address_line2: $("#id_address_line2").val(),
+            address_state: $("#id_address_state").val(),
+            address_zip: $("#id_address_zip").val(),
+            address_country: $("#id_address_country").val(),
+            number: $("#id_number").val(),
+            exp_month: $("#id_exp_month").val(),
+            exp_year: $("#id_exp_year").val(),
+            cvc: $("#id_cvc").val()
+        }, function(status, response) {
+            if (response.error) {
+                $("form").find(".alert-error").remove();
+                var field_divs = $("form").find(".control-group").filter(".error");
+                field_divs.removeClass("error");
+                field_divs.find("[id^=error_1_id_]").remove();
+                if (response.error.param) {
+                    var field_div = $("form").find(".control-group").filter("#div_id_" + response.error.param);
+                    field_div.addClass("error");
+                    field_div.children(".controls").append('<span id="error_1_id_' + response.error.param + '" class="help-inline"><strong>' + response.error.message + "</strong></span>");
+                    console.log(field_div);
+                } else {
+                    $("form").prepend('<div class="alert alert-block alert-error"><ul></ul></div>');
+                    $(".alert-error ul").append("<li>" + response.error.message + "</li>");
+                }
+                $("button").removeAttr("disabled");
+            } else {
+                $("#id_stripe_token").val(response.id);
+                $("form").get(0).submit();
+            }
+        });
+        return false;
+    });
+{% endif %}
+{% endblock %}

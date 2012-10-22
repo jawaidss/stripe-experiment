@@ -73,6 +73,7 @@
         <script src="{{ STATIC_URL }}js/jquery-django-csrf.js"></script>
         <script src="{{ STATIC_URL }}js/jquery-ajax-validation.js"></script>
         <script src="{{ STATIC_URL }}js/jquery-ajax-validation-bootstrap.js"></script>
+        {% block extrascripts %}{% endblock %}
         <script>
             $(function() {
                 $(":input:visible:enabled").first().focus();

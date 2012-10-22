@@ -4,18 +4,25 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import utc
 
+class Customer(models.Model):
+    user = models.OneToOneField(User)
+    stripe_id = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ('user',)
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.user, self.stripe_id)
+
 class Order(models.Model):
-    user = models.ForeignKey(User)
+    customer = models.ForeignKey(Customer)
     datetime = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc))
 
     class Meta:
-        ordering = ('user', 'datetime',)
+        ordering = ('customer', 'datetime',)
 
     def __unicode__(self):
-        return '%s @ %s' % (self.user, self.datetime)
-
-    def count(self):
-        return self.item_set.count()
+        return '%s @ %s' % (self.customer, self.datetime)
 
     def total(self):
         return self.item_set.aggregate(total=models.Sum('price'))['total']

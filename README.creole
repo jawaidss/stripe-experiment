@@ -45,4 +45,7 @@ SECRET_KEY = ''
 GOOGLE_ANALYTICS_ID = ''
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+STRIPE_SECRET_KEY = ''
+STRIPE_PUBLISHABLE_KEY = ''
 }}}

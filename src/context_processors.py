@@ -15,3 +15,8 @@ def main(request):
         'SITE_DOMAIN': settings.SITE_DOMAIN,
         'SITE_NAME': settings.SITE_NAME,
     }
+
+def shopping(request):
+    return {
+        'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
+    }

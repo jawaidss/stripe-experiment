@@ -1,3 +1,6 @@
+import stripe
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -5,7 +8,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from forms import CheckoutForm
+from models import Customer
 from utils import get_or_create_cart
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @login_required
 def cart(request):
@@ -46,7 +53,54 @@ def checkout(request):
         messages.error(request, 'You cannot checkout an empty cart.')
         return HttpResponseRedirect(reverse('shopping-cart'))
 
-    # to-do
-    cart.empty(request)
-    messages.success(request, 'You successfully checked out.')
-    return HttpResponseRedirect(reverse('main-index'))
+    user = request.user
+
+    try:
+        customer = user.customer
+    except Customer.DoesNotExist:
+        customer = None
+
+    if request.method == 'POST':
+        if customer is None:
+            form = CheckoutForm(request.POST)
+
+            if form.is_valid():
+                stripe_customer = stripe.Customer.create(
+                    card=form.cleaned_data['stripe_token'],
+                    description=user.username,
+                    email=user.email
+                )
+                customer = Customer.objects.create(user=user, stripe_id=stripe_customer.id)
+            else:
+                messages.error(request, 'Please try again.')
+                return HttpResponseRedirect(reverse('shopping-checkout'))
+
+        stripe.Charge.create(
+            amount=int(cart.total * 100), # in cents
+            currency='usd',
+            customer=customer.stripe_id
+            # description=...
+        )
+
+        order = Order.objects.create(customer=customer)
+
+        for item in cart.items:
+            pass
+            # Item.objects.create(order=order, ...)
+
+        cart.empty(request)
+        messages.success(request, 'You successfully checked out.')
+        return HttpResponseRedirect(reverse('main-index'))
+
+    if customer is None:
+        form = CheckoutForm(initial={'name': user.get_full_name()})
+        card = None
+    else:
+        form = None
+        card = stripe.Customer.retrieve(customer.stripe_id).active_card
+
+    return render_to_response('shopping/checkout.html',
+                              {'cart': cart,
+                               'form': form,
+                               'card': card},
+                              RequestContext(request))
