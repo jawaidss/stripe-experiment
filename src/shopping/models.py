@@ -2,11 +2,11 @@ from datetime import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.timezone import utc
+from django.utils.timezone import now
 
 class Customer(models.Model):
     user = models.OneToOneField(User)
-    stripe_id = models.CharField(max_length=100)
+    stripe_id = models.CharField('Stripe ID', max_length=100)
 
     class Meta:
         ordering = ('user',)
@@ -16,7 +16,8 @@ class Customer(models.Model):
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer)
-    datetime = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc))
+    ip_address = models.IPAddressField('IP Address')
+    datetime = models.DateTimeField(default=now)
 
     class Meta:
         ordering = ('customer', 'datetime',)

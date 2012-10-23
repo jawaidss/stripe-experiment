@@ -12,7 +12,7 @@ class ItemAdmin(admin.ModelAdmin):
     search_fields = ('order__customer__user__last_name', 'order__customer__user__first_name', 'order__customer__user__username', 'order__customer__stripe_id', 'name', 'description',)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'datetime', 'total',)
+    list_display = ('customer', 'ip_address', 'datetime', 'total',)
     search_fields = ('customer__user__last_name', 'customer__user__first_name', 'customer__user__username', 'customer__stripe_id',)
 
 admin.site.register(Customer, CustomerAdmin)

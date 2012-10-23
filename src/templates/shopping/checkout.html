@@ -19,7 +19,7 @@
             <tbody>
                 {% for item in cart.items %}
                     <tr>
-                        <td><a href="#" rel="popover" title="Description" data-content="{{ item.description }}">{{ item.name }}</a></td>
+                        <td><a href="#" rel="popover" title="Description" data-content="{{ item.get_description }}">{{ item.name }}</a></td>
                         <td>${{ item.price }}</td>
                     </tr>
                 {% endfor %}
@@ -67,6 +67,7 @@
             {% endif %}
             <div class="form-actions">
                 <button class="btn btn-primary" type="submit">Check out</button>
+                <a href="{% url "shopping-cart" %}" class="btn">Cancel</a>
             </div>
         </form>
     </div>

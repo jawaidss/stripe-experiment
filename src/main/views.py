@@ -5,7 +5,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from shopping.utils import Item, get_or_create_cart
+from shopping.utils import get_or_create_cart
+from models import Shirt as ShirtModel
+from utils import Shirt as ShirtClass, Fruit as FruitClass
 
 def index(request):
     messages.info(request, 'This is an info message.')
@@ -16,30 +18,23 @@ def index(request):
                               RequestContext(request))
 
 def _random_item():
-    from decimal import Decimal
-    from random import shuffle, randint
-
-    WORDS = '''
-Eiusmod keytar ullamco, iphone do occupy synth beard street art tumblr wolf keffiyeh bushwick.
-Adipisicing raw denim tattooed et hella, food truck incididunt fugiat portland ut blog.
-Jean shorts nihil pop-up skateboard selvage.
-Kale chips elit sriracha readymade,
-dolore pinterest VHS bicycle rights consequat dolor craft beer anim swag consectetur.
-Food truck anim cillum duis thundercats,
-3 wolf moon pariatur ullamco blog fugiat echo park commodo bushwick umami.
-Odio brunch artisan,
-portland dolor laboris thundercats odd future authentic occaecat craft beer.
-Accusamus art party biodiesel brunch,
-aute flexitarian williamsburg irure Austin dolore.
-'''.strip().replace('.', '').replace(',', '').replace('\n', ' ').split()
-
-    shuffle(WORDS)
-
-    return Item(
-        name=WORDS[-1].title(),
-        description=' '.join(WORDS[:10]).capitalize() + '.',
-        price=Decimal('%d.%d' % (randint(0, 1000), randint(0, 100)))
+    ITEMS = (
+        (ShirtClass, dict(name='Polo', description='Bacon ipsum dolor sit amet ham hock brisket ground round sirloin pork loin corned beef, pastrami ball tip venison pancetta filet mignon capicola tri-tip chuck. Ground round meatloaf prosciutto sausage, strip steak ball tip tenderloin andouille frankfurter pork ham short ribs hamburger bresaola. Hamburger rump filet mignon venison swine pork chop fatback. Capicola drumstick short loin, venison strip steak turkey chicken biltong turducken pork chop prosciutto pork jerky. Bacon sirloin flank, hamburger tri-tip drumstick ham hock pork loin pork chop.', price=49.99, size=ShirtModel.SMALL)),
+        (ShirtClass, dict(name='Oxford', description='Boudin beef meatloaf ham hock shank short loin sirloin salami filet mignon hamburger pig biltong spare ribs pork. Short ribs pork chop leberkas cow tail tongue strip steak capicola chuck andouille t-bone. Tenderloin brisket ham hock, strip steak pig tri-tip pastrami beef ham prosciutto turkey filet mignon. Jerky swine beef, frankfurter ribeye prosciutto sirloin sausage cow leberkas andouille chuck tongue ball tip. Shankle turkey boudin ball tip, hamburger rump biltong pork belly flank short ribs bresaola sirloin chicken kielbasa. Swine pancetta pastrami meatball frankfurter, chicken flank. Drumstick beef ribs pork filet mignon.', price=59.99, size=ShirtModel.SMALL)),
+        (ShirtClass, dict(name='Graphic T', description='Pork loin kielbasa leberkas tongue ribeye meatball. Pancetta leberkas shoulder boudin shankle tongue. Pastrami shoulder strip steak fatback andouille rump flank pork chop drumstick jerky leberkas shankle. Pork loin cow pork chop ground round frankfurter, ham boudin ribeye turkey beef ribs prosciutto shankle meatball sirloin meatloaf.', price=69.99, size=ShirtModel.SMALL)),
+        (ShirtClass, dict(name='Pocket T', description='Swine ball tip frankfurter, pancetta shankle flank spare ribs ribeye capicola cow pork chop fatback kielbasa andouille t-bone. Spare ribs ball tip leberkas, pastrami salami turducken andouille hamburger. Bresaola beef ribs filet mignon, sausage t-bone shoulder venison ribeye pancetta chuck. Andouille kielbasa tenderloin, spare ribs short ribs biltong jerky fatback.', price=100, size=ShirtModel.MEDIUM)),
+        (ShirtClass, dict(name='Muscle T', description='Turducken shoulder tail, bresaola kielbasa shank pork tri-tip flank brisket. Prosciutto chicken ground round, short loin brisket corned beef boudin cow. Fatback tail meatball spare ribs chicken. Salami cow strip steak tri-tip shankle shoulder tenderloin drumstick pig sirloin pork chop rump biltong hamburger ball tip.', price=150, size=ShirtModel.LARGE)),
+        (FruitClass, dict(name='Apple', description='Bacon ipsum dolor sit amet ham hock brisket ground round sirloin pork loin corned beef, pastrami ball tip venison pancetta filet mignon capicola tri-tip chuck. Ground round meatloaf prosciutto sausage, strip steak ball tip tenderloin andouille frankfurter pork ham short ribs hamburger bresaola. Hamburger rump filet mignon venison swine pork chop fatback. Capicola drumstick short loin, venison strip steak turkey chicken biltong turducken pork chop prosciutto pork jerky. Bacon sirloin flank, hamburger tri-tip drumstick ham hock pork loin pork chop.', price=1)),
+        (FruitClass, dict(name='Banana', description='Boudin beef meatloaf ham hock shank short loin sirloin salami filet mignon hamburger pig biltong spare ribs pork. Short ribs pork chop leberkas cow tail tongue strip steak capicola chuck andouille t-bone. Tenderloin brisket ham hock, strip steak pig tri-tip pastrami beef ham prosciutto turkey filet mignon. Jerky swine beef, frankfurter ribeye prosciutto sirloin sausage cow leberkas andouille chuck tongue ball tip. Shankle turkey boudin ball tip, hamburger rump biltong pork belly flank short ribs bresaola sirloin chicken kielbasa. Swine pancetta pastrami meatball frankfurter, chicken flank. Drumstick beef ribs pork filet mignon.', price=2)),
+        (FruitClass, dict(name='Grape', description='Pork loin kielbasa leberkas tongue ribeye meatball. Pancetta leberkas shoulder boudin shankle tongue. Pastrami shoulder strip steak fatback andouille rump flank pork chop drumstick jerky leberkas shankle. Pork loin cow pork chop ground round frankfurter, ham boudin ribeye turkey beef ribs prosciutto shankle meatball sirloin meatloaf.', price=3)),
+        (FruitClass, dict(name='Orange', description='Swine ball tip frankfurter, pancetta shankle flank spare ribs ribeye capicola cow pork chop fatback kielbasa andouille t-bone. Spare ribs ball tip leberkas, pastrami salami turducken andouille hamburger. Bresaola beef ribs filet mignon, sausage t-bone shoulder venison ribeye pancetta chuck. Andouille kielbasa tenderloin, spare ribs short ribs biltong jerky fatback.', price=4)),
+        (FruitClass, dict(name='Strawberry', description='Turducken shoulder tail, bresaola kielbasa shank pork tri-tip flank brisket. Prosciutto chicken ground round, short loin brisket corned beef boudin cow. Fatback tail meatball spare ribs chicken. Salami cow strip steak tri-tip shankle shoulder tenderloin drumstick pig sirloin pork chop rump biltong hamburger ball tip.', price=5)),
     )
+
+    from random import choice
+
+    item_class, kwargs = choice(ITEMS)
+    return item_class(**kwargs)
 
 @login_required
 def add_item_to_cart(request):

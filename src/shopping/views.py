@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from forms import CheckoutForm
-from models import Customer
+from models import Customer, Order
 from utils import get_or_create_cart
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -65,32 +65,54 @@ def checkout(request):
             form = CheckoutForm(request.POST)
 
             if form.is_valid():
-                stripe_customer = stripe.Customer.create(
-                    card=form.cleaned_data['stripe_token'],
-                    description=user.username,
-                    email=user.email
-                )
-                customer = Customer.objects.create(user=user, stripe_id=stripe_customer.id)
+                try:
+                    stripe_customer = stripe.Customer.create(
+                        card=form.cleaned_data['stripe_token'],
+                        description=user.username,
+                        email=user.email
+                    )
+                except stripe.CardError, error:
+                    messages.error(request, error)
+                    return HttpResponseRedirect(reverse('shopping-checkout'))
+                else:
+                    customer = Customer(user=user, stripe_id=stripe_customer.id)
             else:
                 messages.error(request, 'Please try again.')
                 return HttpResponseRedirect(reverse('shopping-checkout'))
 
-        stripe.Charge.create(
-            amount=int(cart.total * 100), # in cents
-            currency='usd',
-            customer=customer.stripe_id
-            # description=...
-        )
+        try:
+            stripe_charge = stripe.Charge.create(
+                amount=int(cart.total * 100), # in cents
+                currency='usd',
+                customer=customer.stripe_id,
+                description=user.username
+            )
+        except stripe.CardError, error:
+            messages.error(request, error)
+            return HttpResponseRedirect(reverse('shopping-checkout'))
+        else:
+            if stripe_charge.card.cvc_check == 'fail':
+                messages.error(request, 'The CVC provided is incorrect.')
+                return HttpResponseRedirect(reverse('shopping-checkout'))
 
-        order = Order.objects.create(customer=customer)
+            if stripe_charge.card.address_line1_check == 'fail':
+                messages.error(request, 'The first address line provided is incorrect.')
+                return HttpResponseRedirect(reverse('shopping-checkout'))
+
+            if stripe_charge.card.address_zip_check == 'fail':
+                messages.error(request, 'The ZIP code provided is incorrect.')
+                return HttpResponseRedirect(reverse('shopping-checkout'))
+
+            customer.save()
+
+        order = Order.objects.create(customer=customer, ip_address=request.META['REMOTE_ADDR'])
 
         for item in cart.items:
-            pass
-            # Item.objects.create(order=order, ...)
+            item.to_model(order).save()
 
         cart.empty(request)
-        messages.success(request, 'You successfully checked out.')
-        return HttpResponseRedirect(reverse('main-index'))
+        messages.success(request, 'You were successfully checked out.')
+        return HttpResponseRedirect(reverse('shopping-cart'))
 
     if customer is None:
         form = CheckoutForm(initial={'name': user.get_full_name()})

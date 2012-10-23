@@ -1,4 +1,4 @@
-class Cart:
+class Cart(object):
     def __init__(self):
         self.items = []
 
@@ -36,13 +36,22 @@ class Cart:
 
         return None
 
-class Item:
-    def __init__(self, name, description, price, **kwargs):
+class Item(object):
+    def __init__(self, name, description, price):
         self.id = int(id(self))
+        self.model = self.model
         self.name = name
         self.description = description
         self.price = price
-        self.kwargs = kwargs
+
+    def get_description(self):
+        return self.description
+
+    def to_model(self, order):
+        return self.model(order=order,
+                          name=self.name,
+                          description=self.description,
+                          price=self.price)
 
 def get_or_create_cart(request):
     return request.session.setdefault('shopping-cart', Cart())
