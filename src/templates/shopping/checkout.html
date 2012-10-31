@@ -33,38 +33,36 @@
     <div class="span6">
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
-            {% if form %}
-                {{ form|crispy }}
-            {% else %}
-                <div class="clearfix control-group">
-                    <label class="control-label">Cardholder name</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.name }}</span></div>
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#new" data-toggle="tab">New card</a></li>
+                <li><a href="#old" data-toggle="tab">Old card</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="new">
+                    {{ new_card_checkout_form|crispy }}
                 </div>
-                <div class="clearfix control-group">
-                    <label class="control-label">Billing address line 1</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.address_line1 }}</span></div>
+                <div class="tab-pane" id="old">
+                    {{ old_card_checkout_form|crispy }}
+                    {% if stripe_customers %}
+                        <div class="controls">
+                            {% for stripe_customer in stripe_customers %}
+                                <label class="radio">
+                                    <input type="radio" name="old" value="{{ stripe_customer.id }}">
+                                    <strong>Cardholder name:</strong> {{ stripe_customer.active_card.name }}<br>
+                                    <strong>Billing address line 1:</strong> {{ stripe_customer.active_card.address_line1 }}<br>
+                                    <strong>Billing address line 2:</strong> {{ stripe_customer.active_card.address_line2 }}<br>
+                                    <strong>Billing address state:</strong> {{ stripe_customer.active_card.address_state }}<br>
+                                    <strong>Billing zip:</strong> {{ stripe_customer.active_card.address_zip }}<br>
+                                    <strong>Billing address country:</strong> {{ stripe_customer.active_card.address_country }}<br>
+                                    <strong>Card:</strong> {{ stripe_customer.active_card.type }} ending in {{ stripe_customer.active_card.last4 }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert">You don't have any saved cards.</div>
+                    {% endif %}
                 </div>
-                <div class="clearfix control-group">
-                    <label class="control-label">Billing address line 2</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.address_line2 }}</span></div>
-                </div>
-                <div class="clearfix control-group">
-                    <label class="control-label">Billing address state</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.address_state }}</span></div>
-                </div>
-                <div class="clearfix control-group">
-                    <label class="control-label">Billing zip</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.address_zip }}</span></div>
-                </div>
-                <div class="clearfix control-group">
-                    <label class="control-label">Billing address country</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.address_country }}</span></div>
-                </div>
-                <div class="clearfix control-group">
-                    <label class="control-label">Card</label>
-                    <div class="controls"><span class="uneditable-input">{{ card.type }} ending in {{ card.last4 }}</span></div>
-                </div>
-            {% endif %}
+            </div>
             <div class="form-actions">
                 <button class="btn btn-primary" type="submit">Check out</button>
                 <a href="{% url "shopping-cart" %}" class="btn">Cancel</a>
@@ -75,19 +73,17 @@
 {% endblock %}
 
 {% block extrascripts %}
-{% if form %}
-    <script src="https://js.stripe.com/v1/"></script>
-{% endif %}
+<script src="https://js.stripe.com/v1/"></script>
 {% endblock %}
 
 {% block jquery %}
 $("a[rel=popover]").popover().click(function() {
     return false;
 });
-{% if form %}
-    Stripe.setPublishableKey("{{ STRIPE_PUBLISHABLE_KEY }}");
-    $("form").submit(function() {
-        $("button").attr("disabled", "disabled");
+Stripe.setPublishableKey("{{ STRIPE_PUBLISHABLE_KEY }}");
+$("form").submit(function() {
+    $("button").attr("disabled", "disabled");
+    if ($("li.active a").attr("href").substring(1) == "new") {
         Stripe.createToken({
             name: $("#id_name").val(),
             address_line1: $("#id_address_line1").val(),
@@ -120,7 +116,10 @@ $("a[rel=popover]").popover().click(function() {
                 $("form").get(0).submit();
             }
         });
-        return false;
-    });
-{% endif %}
+    } else {
+        $("#id_stripe_customer_id").val($("input[type=radio]:checked").val());
+        $("form").get(0).submit();
+    }
+    return false;
+});
 {% endblock %}

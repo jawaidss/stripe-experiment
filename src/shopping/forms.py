@@ -19,7 +19,7 @@ class NoNameTextInput(forms.TextInput):
 class NoNameCharField(forms.CharField):
     widget = NoNameTextInput
 
-class CheckoutForm(forms.Form):
+class NewCardCheckoutForm(forms.Form):
     name = NoNameCharField(label='Cardholder name', required=False)
     address_line1 = NoNameCharField(label='Billing address line 1', required=False)
     address_line2 = NoNameCharField(label='Billing address line 2', required=False)
@@ -31,3 +31,6 @@ class CheckoutForm(forms.Form):
     exp_year = NoNameCharField(label='Card expiration year', required=False)
     cvc = NoNameCharField(label='Card security code', required=False)
     stripe_token = forms.CharField(widget=forms.HiddenInput)
+
+class OldCardCheckoutForm(forms.Form):
+    stripe_customer_id = forms.CharField(widget=forms.HiddenInput)

@@ -8,8 +8,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from forms import CheckoutForm
-from models import Customer, Order
+from forms import NewCardCheckoutForm, OldCardCheckoutForm
+from models import Card, Order
 from utils import get_or_create_cart
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -55,36 +55,40 @@ def checkout(request):
 
     user = request.user
 
-    try:
-        customer = user.customer
-    except Customer.DoesNotExist:
-        customer = None
-
     if request.method == 'POST':
-        if customer is None:
-            form = CheckoutForm(request.POST)
+        new_card_checkout_form = NewCardCheckoutForm(request.POST)
+        old_card_checkout_form = OldCardCheckoutForm(request.POST)
 
-            if form.is_valid():
-                try:
-                    stripe_customer = stripe.Customer.create(
-                        card=form.cleaned_data['stripe_token'],
-                        description=user.username,
-                        email=user.email
-                    )
-                except stripe.CardError, error:
-                    messages.error(request, error)
-                    return HttpResponseRedirect(reverse('shopping-checkout'))
-                else:
-                    customer = Customer(user=user, stripe_id=stripe_customer.id)
-            else:
-                messages.error(request, 'Please try again.')
+        if new_card_checkout_form.is_valid():
+            try:
+                stripe_customer = stripe.Customer.create(
+                    card=new_card_checkout_form.cleaned_data['stripe_token'],
+                    description=user.username,
+                    email=user.email
+                )
+            except stripe.CardError, error:
+                messages.error(request, error)
                 return HttpResponseRedirect(reverse('shopping-checkout'))
+            except stripe.InvalidRequestError:
+                messages.error(request, 'Please try again.') # Invalid stripe_token
+                return HttpResponseRedirect(reverse('shopping-checkout'))
+            else:
+                Card.objects.create(user=user, stripe_customer_id=stripe_customer.id)
+        elif old_card_checkout_form.is_valid():
+            try:
+                stripe_customer = stripe.Customer.retrieve(old_card_checkout_form.cleaned_data['stripe_customer_id'])
+            except stripe.InvalidRequestError:
+                messages.error(request, 'Please try again.') # Invalid stripe_customer_id
+                return HttpResponseRedirect(reverse('shopping-checkout'))
+        else:
+            messages.error(request, 'Please try again.') # Missing stripe_token and stripe_customer_id
+            return HttpResponseRedirect(reverse('shopping-checkout'))
 
         try:
             stripe_charge = stripe.Charge.create(
                 amount=int(cart.total * 100), # in cents
                 currency='usd',
-                customer=customer.stripe_id,
+                customer=stripe_customer.id,
                 description=user.username
             )
         except stripe.CardError, error:
@@ -103,9 +107,7 @@ def checkout(request):
                 messages.error(request, 'The ZIP code provided is incorrect.')
                 return HttpResponseRedirect(reverse('shopping-checkout'))
 
-            customer.save()
-
-        order = Order.objects.create(customer=customer, ip_address=request.META['REMOTE_ADDR'])
+        order = Order.objects.create(user=user, stripe_charge_id=stripe_charge.id, ip_address=request.META['REMOTE_ADDR'])
 
         for item in cart.items:
             item.to_model(order).save()
@@ -114,15 +116,19 @@ def checkout(request):
         messages.success(request, 'You were successfully checked out.')
         return HttpResponseRedirect(reverse('shopping-cart'))
 
-    if customer is None:
-        form = CheckoutForm(initial={'name': user.get_full_name()})
-        card = None
-    else:
-        form = None
-        card = stripe.Customer.retrieve(customer.stripe_id).active_card
+    stripe_customers = []
+    for card in user.card_set.all():
+        try:
+            stripe_customers.append(stripe.Customer.retrieve(card.stripe_customer_id))
+        except stripe.InvalidRequestError:
+            pass # Invalid stripe_customer_id
+
+    new_card_checkout_form = NewCardCheckoutForm(initial={'name': user.get_full_name()})
+    old_card_checkout_form = OldCardCheckoutForm()
 
     return render_to_response('shopping/checkout.html',
                               {'cart': cart,
-                               'form': form,
-                               'card': card},
+                               'new_card_checkout_form': new_card_checkout_form,
+                               'old_card_checkout_form': old_card_checkout_form,
+                               'stripe_customers': stripe_customers},
                               RequestContext(request))
