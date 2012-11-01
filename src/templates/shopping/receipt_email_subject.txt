@@ -1,0 +1,1 @@
+Receipt for order by {{ user.get_full_name|default:user.username }} on {{ order.datetime }}

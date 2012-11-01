@@ -13,5 +13,9 @@ class Shirt(Item):
     )
     size = models.IntegerField(choices=SIZE_CHOICES)
 
+    def get_description(self):
+        description = super(Shirt, self).get_description()
+        return '%s Size: %s' % (description, self.get_size_display())
+
 class Fruit(Item):
     pass

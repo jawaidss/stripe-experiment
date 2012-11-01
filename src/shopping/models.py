@@ -34,9 +34,27 @@ class Item(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    subclass = models.CharField(max_length=100, editable=False)
+    # Would break if the name of a subclass is longer than 100 characters
+
+    def save(self, *args, **kwargs):
+        if not self.subclass:
+            # Depends on self._meta
+            self.subclass = self._meta.module_name
+
+        super(Item, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('order', 'name',)
 
     def __unicode__(self):
         return '%s - %s' % (self.order, self.name)
+
+    def get_subclass(self):
+        if self.subclass and hasattr(self, self.subclass):
+            return getattr(self, self.subclass)
+
+        return self
+
+    def get_description(self):
+        return self.description

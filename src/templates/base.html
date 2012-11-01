@@ -37,7 +37,13 @@
                     <div class="nav-collapse">
                         <ul class="nav">
                             <li{% if IS_ACTIVE.index %} class="active"{% endif %}><a href="{% url "main-index" %}">Home</a></li>
-                            <li{% if IS_ACTIVE.cart %} class="active"{% endif %}><a href="{% url "shopping-cart" %}">Cart</a></li>
+                            <li class="dropdown{% if IS_ACTIVE.cart or IS_ACTIVE.orders %} active"{% endif %}">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Shopping <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li{% if IS_ACTIVE.cart %} class="active"{% endif %}><a href="{% url "shopping-cart" %}">Cart</a></li>
+                                    <li{% if IS_ACTIVE.orders %} class="active"{% endif %}><a href="{% url "shopping-orders" %}">Orders</a></li>
+                                </ul>
+                            </li>
                             {% if user.is_anonymous %}
                                 <li{% if IS_ACTIVE.log_in %} class="active"{% endif %}><a href="{% url "auth_login" %}">Log in</a></li>
                                 <li{% if IS_ACTIVE.sign_up %} class="active"{% endif %}><a href="{% url "registration_register" %}">Sign up</a></li>

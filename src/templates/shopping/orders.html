@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{% block h1 %}Orders by {{ user.get_full_name|default:user.username }}{% endblock %}{% endblock %}
+
+{% block description %}This is the description.{% endblock %}
+
+{% block content %}
+{% if orders %}
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Datetime</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td><a href="{% url "shopping-order" order.id %}">{{ order.datetime }}</a></td>
+                    <td>${{ order.total }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">You haven't placed any orders, yet.</div>
+{% endif %}
+{% endblock %}

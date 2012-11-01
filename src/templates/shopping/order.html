@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{% block h1 %}Order by {{ user.get_full_name|default:user.username }} on {{ order.datetime }}{% endblock %}{% endblock %}
+
+{% block description %}This is the description.{% endblock %}
+
+{% block content %}
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.item_set.all %}
+            <tr>
+                <td><a href="#" rel="popover" title="Description" data-content="{{ item.get_subclass.get_description }}">{{ item.name }}</a></td>
+                <td>${{ item.price }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><strong>Total</strong></td>
+            <td><strong>${{ order.total }}</strong></td>
+        </tr>
+    </tbody>
+</table>
+{% if stripe_charge %}
+    <div class="well"><strong>Card:</strong> {{ stripe_charge.card.type }} ending in {{ stripe_charge.card.last4 }}</div>
+{% endif %}
+<p><a href="{% url "shopping-orders" %}" class="btn btn-mini"><i class="icon-arrow-left"></i> Back to orders</a></p>
+{% endblock %}
+
+{% block jquery %}
+$("a[rel=popover]").popover().click(function() {
+    return false;
+});
+{% endblock %}

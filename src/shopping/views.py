@@ -3,10 +3,13 @@ import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
+from django.template.loader import render_to_string
 
 from forms import NewCardCheckoutForm, OldCardCheckoutForm
 from models import Card, Order
@@ -117,7 +120,15 @@ def checkout(request):
 
         cart.empty(request)
         messages.success(request, 'You were successfully checked out.')
-        return HttpResponseRedirect(reverse('shopping-cart'))
+
+        send_mail(render_to_string('shopping/receipt_email_subject.txt',
+                                   {'user': user, 'order': order}),
+                  render_to_string('shopping/receipt_email.txt',
+                                   {'site': Site.objects.get_current(), 'order': order}),
+                  settings.DEFAULT_FROM_EMAIL,
+                  [user.email])
+
+        return HttpResponseRedirect(reverse('shopping-order', args=[order.id]))
 
     stripe_customers = []
     for card in user.card_set.all():
@@ -134,4 +145,23 @@ def checkout(request):
                                'new_card_checkout_form': new_card_checkout_form,
                                'old_card_checkout_form': old_card_checkout_form,
                                'stripe_customers': stripe_customers},
+                              RequestContext(request))
+
+@login_required
+def orders(request):
+    orders = request.user.order_set.all()
+    return render_to_response('shopping/orders.html',
+                              {'orders': orders},
+                              RequestContext(request))
+
+@login_required
+def order(request, id):
+    order = get_object_or_404(Order, id=id, user=request.user)
+    try:
+        stripe_charge = stripe.Charge.retrieve(order.stripe_charge_id)
+    except stripe.InvalidRequestError:
+        stripe_charge = None
+    return render_to_response('shopping/order.html',
+                              {'order': order,
+                               'stripe_charge': stripe_charge},
                               RequestContext(request))
