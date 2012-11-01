@@ -80,6 +80,9 @@ def checkout(request):
             except stripe.InvalidRequestError:
                 messages.error(request, 'Please try again.') # Invalid stripe_customer_id
                 return HttpResponseRedirect(reverse('shopping-checkout'))
+            if user.card_set.filter(stripe_customer_id=stripe_customer.id).count() == 0:
+                messages.error(request, 'Please try again.') # Invalid stripe_customer_id
+                return HttpResponseRedirect(reverse('shopping-checkout'))
         else:
             messages.error(request, 'Please try again.') # Missing stripe_token and stripe_customer_id
             return HttpResponseRedirect(reverse('shopping-checkout'))
