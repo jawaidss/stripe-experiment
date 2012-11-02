@@ -55,7 +55,7 @@ $("a[rel=popover]").popover().click(function() {
 $("div.empty-cart").hide();
 $("a.empty-cart").click(function() {
     if (!$(this).hasClass("disabled")) {
-        $("div.empty-cart").toggle();
+        $("div.empty-cart").slideToggle();
         $("a.empty-cart.disabled").removeClass("disabled");
         $(this).addClass("disabled");
     }
