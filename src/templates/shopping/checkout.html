@@ -34,8 +34,8 @@
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
             <ul class="nav nav-tabs">
-                <li{% if not cards %}  class="active"{% endif %}><a href="#new" data-toggle="tab">New card</a></li>
-                <li{% if cards %}  class="active"{% endif %}><a href="#old" data-toggle="tab">Old card</a></li>
+                <li{% if not cards %} class="active"{% endif %}><a href="#new" data-toggle="tab">New card</a></li>
+                <li{% if cards %} class="active"{% endif %}><a href="#old" data-toggle="tab">Old card</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane{% if not cards %} active{% endif %}" id="new">
@@ -93,7 +93,7 @@ $("a[href=#]").live("click", function() {
 Stripe.setPublishableKey("{{ STRIPE_PUBLISHABLE_KEY }}");
 $("form").submit(function() {
     $("button").attr("disabled", "disabled");
-    if ($("li.active a").attr("href").substring(1) == "new") {
+    if ($("ul.nav-tabs li.active a").attr("href").substring(1) == "new") {
         Stripe.createToken({
             name: $("#id_name").val(),
             address_line1: $("#id_address_line1").val(),
