@@ -148,6 +148,23 @@ def checkout(request):
                               RequestContext(request))
 
 @login_required
+def make_default_card(request, id):
+    card = get_object_or_404(Card, id=id, user=request.user)
+    card.is_default = True
+    card.save()
+
+    messages.success(request, 'You have successfully updated your default card.')
+    return HttpResponseRedirect(reverse('shopping-checkout'))
+
+@login_required
+def delete_card(request, id):
+    card = get_object_or_404(Card, id=id, user=request.user)
+    card.delete()
+
+    messages.success(request, 'You have successfully deleted your card.')
+    return HttpResponseRedirect(reverse('shopping-checkout'))
+
+@login_required
 def orders(request):
     orders = request.user.order_set.all()
 

@@ -59,6 +59,10 @@
                                     <strong>Billing address country:</strong> {{ stripe_customer.active_card.address_country }}<br>
                                     <strong>Card:</strong> {{ stripe_customer.active_card.type }} ending in {{ stripe_customer.active_card.last4 }}
                                 </label>
+                                <p>
+                                    <a href="#" rel="popover" title="Are you sure?" data-content="<div class='btn-group'><a href='{% url "shopping-make_default_card" card.id %}' class='btn btn-primary'>Yes</a><a href='#' class='btn'>No</a></div>" data-trigger="click" data-placement="top" class="btn btn-mini btn-success"><i class="icon-ok icon-white"></i> Make default</a>
+                                    <a href="#" rel="popover" title="Are you sure?" data-content="<div class='btn-group'><a href='{% url "shopping-delete_card" card.id %}' class='btn btn-primary'>Yes</a><a href='#' class='btn'>No</a></div>" data-trigger="click" data-placement="top" class="btn btn-mini btn-danger"><i class="icon-remove icon-white"></i> Delete</a>
+                                </p>
                             {% endfor %}
                         </div>
                     {% else %}
@@ -81,6 +85,9 @@
 
 {% block jquery %}
 $("a[rel=popover]").popover().click(function() {
+    return false;
+});
+$("a[href=#]").live("click", function() {
     return false;
 });
 Stripe.setPublishableKey("{{ STRIPE_PUBLISHABLE_KEY }}");

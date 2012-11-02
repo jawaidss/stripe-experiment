@@ -28,7 +28,7 @@
 {% if stripe_charge %}
     <div class="well"><strong>Card:</strong> {{ stripe_charge.card.type }} ending in {{ stripe_charge.card.last4 }}</div>
 {% endif %}
-<p><a href="{% url "shopping-orders" %}" class="btn btn-mini"><i class="icon-arrow-left"></i> Back to orders</a></p>
+<p><a href="{% url "shopping-orders" %}" class="btn btn-small"><i class="icon-arrow-left"></i> Back to orders</a></p>
 {% endblock %}
 
 {% block jquery %}

@@ -7,4 +7,6 @@ urlpatterns = patterns('shopping.views',
     url(r'^checkout/$', 'checkout', name='shopping-checkout'),
     url(r'^orders/$', 'orders', name='shopping-orders'),
     url(r'^orders/(?P<id>[\d]+)/$', 'order', name='shopping-order'),
+    url(r'^cards/(?P<id>[\d]+)/make-default/$', 'make_default_card', name='shopping-make_default_card'),
+    url(r'^cards/(?P<id>[\d]+)/delete/$', 'delete_card', name='shopping-delete_card'),
 )
