@@ -116,7 +116,8 @@ def checkout(request):
         order = Order.objects.create(user=user, stripe_charge_id=stripe_charge.id, ip_address=request.META['REMOTE_ADDR'])
 
         for item in cart.items:
-            item.to_model(order).save()
+            item.order = order
+            item.save()
 
         cart.empty(request)
         messages.success(request, 'You were successfully checked out.')

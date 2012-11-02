@@ -2,6 +2,13 @@ class Cart(object):
     def __init__(self):
         self.items = []
 
+    def __contains__(self, item_):
+        for item in self.items:
+            if item.id == item_.id:
+                return True
+
+        return False
+
     @property
     def total(self):
         return sum([item.price for item in self.items])
@@ -15,7 +22,9 @@ class Cart(object):
         request.session.modified = True
 
     def add(self, request, item):
-        if item not in self.items:
+        item.id = int(id(item))
+
+        if item not in self:
             self.items.append(item)
             self.items.sort(key=lambda item: item.name)
 
@@ -35,23 +44,6 @@ class Cart(object):
                 return item
 
         return None
-
-class Item(object):
-    def __init__(self, name, description, price):
-        self.id = int(id(self))
-        self.model = self.model
-        self.name = name
-        self.description = description
-        self.price = price
-
-    def get_description(self):
-        return self.description
-
-    def to_model(self, order):
-        return self.model(order=order,
-                          name=self.name,
-                          description=self.description,
-                          price=self.price)
 
 def get_or_create_cart(request):
     return request.session.setdefault('shopping-cart', Cart())
