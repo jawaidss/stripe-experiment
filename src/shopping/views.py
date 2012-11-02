@@ -124,7 +124,7 @@ def checkout(request):
         send_mail(render_to_string('shopping/receipt_email_subject.txt',
                                    {'user': user, 'order': order}),
                   render_to_string('shopping/receipt_email.txt',
-                                   {'site': Site.objects.get_current(), 'order': order}),
+                                   {'site': Site.objects.get_current(), 'order': order, 'stripe_charge': stripe_charge}),
                   settings.DEFAULT_FROM_EMAIL,
                   [user.email])
 

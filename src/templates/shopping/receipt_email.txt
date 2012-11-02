@@ -1,1 +1,9 @@
 http://{{ site.domain }}{% url "shopping-order" order.id %}
+{% for item in order.item_set.all %}
+Name: {{ item.name }}
+Description: {{ item.get_subclass.get_description }}
+Price: ${{ item.price }}
+{% endfor %}
+Total: ${{ order.total }}
+
+{% if stripe_charge %}Card: {{ stripe_charge.card.type }} ending in {{ stripe_charge.card.last4 }}{% endif %}
