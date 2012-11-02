@@ -34,20 +34,23 @@
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#new" data-toggle="tab">New card</a></li>
-                <li><a href="#old" data-toggle="tab">Old card</a></li>
+                <li{% if not cards %}  class="active"{% endif %}><a href="#new" data-toggle="tab">New card</a></li>
+                <li{% if cards %}  class="active"{% endif %}><a href="#old" data-toggle="tab">Old card</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="new">
+                <div class="tab-pane{% if not cards %} active{% endif %}" id="new">
                     {{ new_card_checkout_form|crispy }}
                 </div>
-                <div class="tab-pane" id="old">
+                <div class="tab-pane{% if cards %} active{% endif %}" id="old">
                     {{ old_card_checkout_form|crispy }}
-                    {% if stripe_customers %}
+                    {% if cards %}
                         <div class="controls">
-                            {% for stripe_customer in stripe_customers %}
+                            {% for card, stripe_customer in cards %}
                                 <label class="radio">
-                                    <input type="radio" name="old" value="{{ stripe_customer.id }}">
+                                    <input type="radio" name="old" value="{{ stripe_customer.id }}"{% if card.is_default %} checked{% endif %}>
+                                    {% if card.is_default %}
+                                        <span class="label label-info">Default</span><br>
+                                    {% endif %}
                                     <strong>Cardholder name:</strong> {{ stripe_customer.active_card.name }}<br>
                                     <strong>Billing address line 1:</strong> {{ stripe_customer.active_card.address_line1 }}<br>
                                     <strong>Billing address line 2:</strong> {{ stripe_customer.active_card.address_line2 }}<br>

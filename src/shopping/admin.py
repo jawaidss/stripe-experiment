@@ -3,7 +3,8 @@ from django.contrib import admin
 from models import Card, Order
 
 class CardAdmin(admin.ModelAdmin):
-    list_display = ('user', 'stripe_customer_id',)
+    list_display = ('user', 'stripe_customer_id', 'is_default',)
+    list_filter = ('is_default',)
     search_fields = ('user__last_name', 'user__first_name', 'user__username', 'stripe_customer_id',)
 
 class OrderAdmin(admin.ModelAdmin):

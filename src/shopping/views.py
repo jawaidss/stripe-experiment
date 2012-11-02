@@ -83,7 +83,7 @@ def checkout(request):
             except stripe.InvalidRequestError:
                 messages.error(request, 'Please try again.') # Invalid stripe_customer_id
                 return HttpResponseRedirect(reverse('shopping-checkout'))
-            if user.card_set.filter(stripe_customer_id=stripe_customer.id).count() == 0:
+            if not user.card_set.filter(stripe_customer_id=stripe_customer.id):
                 messages.error(request, 'Please try again.') # Invalid stripe_customer_id
                 return HttpResponseRedirect(reverse('shopping-checkout'))
         else:
@@ -130,10 +130,10 @@ def checkout(request):
 
         return HttpResponseRedirect(reverse('shopping-order', args=[order.id]))
 
-    stripe_customers = []
+    cards = []
     for card in user.card_set.all():
         try:
-            stripe_customers.append(stripe.Customer.retrieve(card.stripe_customer_id))
+            cards.append((card, stripe.Customer.retrieve(card.stripe_customer_id)))
         except stripe.InvalidRequestError:
             pass # Invalid stripe_customer_id
 
@@ -144,12 +144,13 @@ def checkout(request):
                               {'cart': cart,
                                'new_card_checkout_form': new_card_checkout_form,
                                'old_card_checkout_form': old_card_checkout_form,
-                               'stripe_customers': stripe_customers},
+                               'cards': cards},
                               RequestContext(request))
 
 @login_required
 def orders(request):
     orders = request.user.order_set.all()
+
     return render_to_response('shopping/orders.html',
                               {'orders': orders},
                               RequestContext(request))
@@ -157,10 +158,12 @@ def orders(request):
 @login_required
 def order(request, id):
     order = get_object_or_404(Order, id=id, user=request.user)
+
     try:
         stripe_charge = stripe.Charge.retrieve(order.stripe_charge_id)
     except stripe.InvalidRequestError:
         stripe_charge = None
+
     return render_to_response('shopping/order.html',
                               {'order': order,
                                'stripe_charge': stripe_charge},
