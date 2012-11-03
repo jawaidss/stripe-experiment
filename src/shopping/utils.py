@@ -15,7 +15,7 @@ class Cart(object):
         request.session.modified = True
 
     def add(self, request, item):
-        item.id_ = int(id(item))
+        item.cart_id = int(id(item))
 
         if item not in self.items:
             self.items.append(item)
@@ -29,7 +29,7 @@ class Cart(object):
 
     def remove(self, request, id):
         for item in self.items:
-            if item.id_ == id:
+            if item.cart_id == id:
                 self.items.remove(item)
 
                 request.session.modified = True

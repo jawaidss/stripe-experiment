@@ -66,7 +66,7 @@ class Item(models.Model):
         ordering = ('order', 'name',)
 
     def __unicode__(self):
-        if hasattr(self, 'id_'):
+        if hasattr(self, 'cart_id'):
             return self.name
 
         return '%s - %s' % (self.order, self.name)
@@ -79,8 +79,8 @@ class Item(models.Model):
         super(Item, self).save(*args, **kwargs)
 
     def __eq__(self, other):
-        if hasattr(self, 'id_') and hasattr(other, 'id_'):
-            return self.id_ == other.id_
+        if hasattr(self, 'cart_id') and hasattr(other, 'cart_id'):
+            return self.cart_id == other.cart_id
 
         return super(Item, self).__eq__(other)
 

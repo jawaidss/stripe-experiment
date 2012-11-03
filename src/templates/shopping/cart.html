@@ -17,7 +17,7 @@
         <tbody>
             {% for item in cart.items %}
                 <tr>
-                    <td><a href="{% url "shopping-remove_item_from_cart" item.id_ %}" rel="tooltip" title="Remove"><i class="icon-remove"></i></a></td>
+                    <td><a href="{% url "shopping-remove_item_from_cart" item.cart_id %}" rel="tooltip" title="Remove"><i class="icon-remove"></i></a></td>
                     <td><a href="#" rel="popover" title="Description" data-content="{{ item.get_description }}">{{ item.name }}</a></td>
                     <td>${{ item.price }}</td>
                 </tr>
