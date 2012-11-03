@@ -66,6 +66,9 @@ class Item(models.Model):
         ordering = ('order', 'name',)
 
     def __unicode__(self):
+        if hasattr(self, 'id_'):
+            return self.name
+
         return '%s - %s' % (self.order, self.name)
 
     def save(self, *args, **kwargs):
@@ -74,6 +77,12 @@ class Item(models.Model):
             self.subclass = self._meta.module_name
 
         super(Item, self).save(*args, **kwargs)
+
+    def __eq__(self, other):
+        if hasattr(self, 'id_') and hasattr(other, 'id_'):
+            return self.id_ == other.id_
+
+        return super(Item, self).__eq__(other)
 
     def get_subclass(self):
         if self.subclass and hasattr(self, self.subclass):
