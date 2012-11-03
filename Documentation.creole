@@ -1,0 +1,58 @@
+* [[https://github.com/jawaidss/stripe-experiment/compare/d5a539d83ba3593a301a9bf1abc14ebf8cc5f266...HEAD|Diff]]
+
+= Getting started =
+
+* Copy **src/shopping/** to your project next to your other apps.
+* Copy **src/context_processors.py**'s {{{shopping}}} function to your project's **context_processors.py**.
+* Add {{{'shopping'}}} to {{{INSTALLED_APPS}}} in your project's **settings.py**.
+* Add {{{'context_processors.shopping'}}} to {{{TEMPLATE_CONTEXT_PROCESSORS}}} in your project's **settings.py**.
+* Set {{{STRIPE_SECRET_KEY}}} and {{{STRIPE_PUBLISHABLE_KEY}}} in your project's **settings.py**.
+* Add {{{url(r'^shopping/', include('shopping.urls'))}}} to {{{urlpatterns}}} in your project's **urls.py**.
+
+= Templates =
+
+* Create **shopping/** in your project next to your other templates.
+** See **src/templates/shopping/** in the diff.
+*** Create **cart.html**.
+*** Create **checkout.html**.
+*** Create **order.html**.
+*** Create **orders.html**.
+*** Create **receipt_email.txt**.
+*** Create **receipt_email_subject.txt**.
+* Add links to {{{{% url "shopping-cart" %}}}} and {{{{% url "shopping-orders" %}}}} in your templates.
+** See **src/templates/base.html** in the diff.
+
+= Models =
+
+* See **src/main/models.py** in the diff.
+
+== Notes ==
+
+* Your models should extend {{{shopping.models.Item}}}.
+* Your models can have any additional fields.
+* Your models can override {{{get_description}}}, which is used instead of {{{description}}} directly in templates.
+
+= Admin =
+
+* See **src/main/admin.py** in the diff.
+
+== Notes ==
+
+* Your admin classes should extend {{{shopping.admin.ItemAdmin}}}.
+* Your admin classes should override {{{list_display}}} and/or {{{search_fields}}}, if your model has additional fields.
+* Your admin classes can have any additional properties.
+
+= Views and URLs =
+
+* See **src/main/views.py** and **src/main/urls.py** in the diff.
+
+== Notes ==
+
+* Your views and URLs should handle adding items to the cart.
+
+{{{
+cart = get_or_create_cart(request)
+cart.add(request, item)
+}}}
+
+* The item parameter should be an unsaved instance of one of your models that extends {{{shopping.models.Item}}}.
