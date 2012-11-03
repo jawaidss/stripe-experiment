@@ -168,8 +168,8 @@ ACCOUNT_ACTIVATION_DAYS = 7
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-STRIPE_SECRET_KEY = ''
-STRIPE_PUBLISHABLE_KEY = ''
+STRIPE_SECRET_KEY = 'sk_test_...'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_...'
 
 # Import local_settings, if it exists.
 try:

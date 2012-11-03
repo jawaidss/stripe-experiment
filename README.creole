@@ -1,7 +1,14 @@
 = Usage =
 
 {{{
+source ~/virtualenvs/stripe-experiment/bin/activate
 cd ~/workspace/stripe-experiment/src/
+}}}
+
+== Requirements ==
+
+{{{
+pip install django django-ajax-validation django-crispy-forms django-registration django_extensions stripe
 }}}
 
 == reset ==
@@ -48,4 +55,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 STRIPE_SECRET_KEY = ''
 STRIPE_PUBLISHABLE_KEY = ''
+
+# Small hack so Django 1.5 templates work in 1.4
+
+import django.template
+
+django.template.add_to_builtins('django.templatetags.future')
 }}}
